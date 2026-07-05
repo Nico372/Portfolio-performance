@@ -1,0 +1,26 @@
+name: Update Crypto Prices
+
+on:
+  schedule:
+    - cron: '0 6 * * *'
+  workflow_dispatch:
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Fetch prices
+        run: |
+          curl -s "https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1d&limit=1000" -o btc-test.json
+          curl -s "https://api.binance.com/api/v3/klines?symbol=ETHEUR&interval=1d&limit=1000" -o eth-test.json
+          curl -s "https://api.binance.com/api/v3/klines?symbol=SOLEUR&interval=1d&limit=1000" -o sol-test.json
+
+      - name: Commit and push
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add btc-test.json eth-test.json sol-test.json
+          git diff --staged --quiet || git commit -m "Update crypto prices"
+          git push
