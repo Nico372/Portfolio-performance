@@ -16,9 +16,9 @@ jobs:
 
       - name: Fetch prices
         run: |
-          curl -s "https://api.binance.com/api/v3/klines?symbol=BTCEUR&interval=1d&limit=1000" -o btc-test.json
-          curl -s "https://api.binance.com/api/v3/klines?symbol=ETHEUR&interval=1d&limit=1000" -o eth-test.json
-          curl -s "https://api.binance.com/api/v3/klines?symbol=SOLEUR&interval=1d&limit=1000" -o sol-test.json
+          curl -s "https://api.kraken.com/0/public/OHLC?pair=XBTEUR&interval=1440" -o btc-test.json
+          curl -s "https://api.kraken.com/0/public/OHLC?pair=ETHEUR&interval=1440" -o eth-test.json
+          curl -s "https://api.kraken.com/0/public/OHLC?pair=SOLEUR&interval=1440" -o sol-test.json
 
       - name: Commit and push
         run: |
