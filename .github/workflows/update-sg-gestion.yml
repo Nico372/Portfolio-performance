@@ -1,4 +1,4 @@
-name: Update Amundi Fund Prices
+name: Update Societe Generale Gestion Fund Prices
 
 on:
   schedule:
@@ -16,28 +16,28 @@ jobs:
 
       - name: Fetch NAV history
         run: |
-          curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/2743661-4991185" \
+          curl -s -X POST "https://www.societegeneralegestion.fr/product-services/fdr/share/v3/isin/QS0002907598/partner/886" \
             -H "Content-Type: application/json" \
             -A "Mozilla/5.0" \
             --data '{"fields":["navHistory"]}' \
-            -o amundi-canalplus-e.json
+            -o sg-vivendi-e.json
 
-          curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/2743661-2762280" \
+          curl -s -X POST "https://www.societegeneralegestion.fr/product-services/fdr/share/v3/isin/QS0003749379/partner/886" \
             -H "Content-Type: application/json" \
             -A "Mozilla/5.0" \
             --data '{"fields":["navHistory"]}' \
-            -o amundi-havas-e.json
+            -o sg-opus22-levier.json
 
-          curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/2743661-5735181" \
+          curl -s -X POST "https://www.societegeneralegestion.fr/product-services/fdr/share/v3/isin/QS0003712583/partner/886" \
             -H "Content-Type: application/json" \
             -A "Mozilla/5.0" \
             --data '{"fields":["navHistory"]}' \
-            -o amundi-lhg-e.json
+            -o sg-umg-e.json
 
       - name: Commit and push
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add amundi-canalplus-e.json amundi-havas-e.json amundi-lhg-e.json
-          git diff --staged --quiet || git commit -m "Update Amundi fund prices"
+          git add sg-vivendi-e.json sg-opus22-levier.json sg-umg-e.json
+          git diff --staged --quiet || git commit -m "Update Societe Generale Gestion fund prices"
           git push
