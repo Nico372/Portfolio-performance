@@ -16,23 +16,32 @@ jobs:
 
       - name: Fetch NAV history
         run: |
-          curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/2743661-4991185" \
-            -H "Content-Type: application/json" \
-            -A "Mozilla/5.0" \
-            --data '{"fields":["navHistory"]}' \
-            -o amundi-canalplus-e.json
+          fetch() {
+            local pacteo_code="$1"
+            local out_file="$2"
+            local tmp_file
+            tmp_file=$(mktemp)
+            curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/${pacteo_code}" \
+              -H "Content-Type: application/json" \
+              -H "Accept: application/json" \
+              -A "Mozilla/5.0" \
+              --data '{"fields":["navHistory"]}' \
+              -o "$tmp_file"
+            if jq -e '(.[0].navHistory // .navHistory // []) | length > 0' "$tmp_file" > /dev/null 2>&1; then
+              mv "$tmp_file" "$out_file"
+            else
+              echo "::error::Reponse invalide pour $out_file (code Pacteo $pacteo_code peut-etre perime) :"
+              cat "$tmp_file"
+              rm -f "$tmp_file"
+              exit 1
+            fi
+          }
 
-          curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/2743661-2762280" \
-            -H "Content-Type: application/json" \
-            -A "Mozilla/5.0" \
-            --data '{"fields":["navHistory"]}' \
-            -o amundi-havas-e.json
-
-          curl -s -X POST "https://funds.amundi-ee.com/product-services/fdr/share/v3/full/2743661-5735181" \
-            -H "Content-Type: application/json" \
-            -A "Mozilla/5.0" \
-            --data '{"fields":["navHistory"]}' \
-            -o amundi-lhg-e.json
+          # Codes Pacteo Amundi EE (a retrouver via l'espace epargnant si l'API renvoie
+          # "Unable to decode Pacteo code" : ouvrir la fiche du fonds, l'URL contient le code)
+          fetch "2775060-5022583" amundi-canalplus-e.json
+          fetch "2775060-2793679" amundi-havas-e.json
+          fetch "2775060-5766580" amundi-lhg-e.json
 
       - name: Commit and push
         run: |
